@@ -1,0 +1,24 @@
+version: "3.7"
+
+services:
+  minio:
+    container_name: minio
+    build: ../minio
+    command: ./minio
+    networks:
+      - traefik_proxy
+    ports:
+      - "8071:8071"
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.minio.service=minio
+      - traefik.http.routers.minio.rule=Host(`app.flixray.ru`) && PathPrefix(`/srv/minio`)
+      - traefik.http.middlewares.minio.stripprefix.prefixes=/srv/minio
+      - traefik.http.routers.minio.middlewares=minio
+      - traefik.http.routers.minio.entrypoints=https
+      - traefik.http.routers.minio.tls.certresolver=production
+      - traefik.http.services.minio.loadbalancer.server.port=8071
+
+networks:
+  traefik_proxy:
+    external: true

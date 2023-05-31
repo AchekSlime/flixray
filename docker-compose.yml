@@ -1,0 +1,47 @@
+version: "3.7"
+
+services:
+  streaming:
+    build: ./streaming
+    command: ./streaming
+    networks:
+      - traefik_proxy
+    ports:
+      - "8082:8082"
+
+  hello:
+    build: ./hello
+    command: ./hello
+    networks:
+      - traefik_proxy
+    ports:
+      - "8080:8080"
+
+  auth:
+    build: ./auth
+    command: ./auth
+    networks:
+      - traefik_proxy
+    ports:
+      - "8081:8081"
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.auth.service=auth
+      - traefik.http.routers.auth.rule=Host(`app.flixray.ru`) && PathPrefix(`/srv/auth`)
+      - traefik.http.middlewares.auth.stripprefix.prefixes=/srv/auth
+      - traefik.http.routers.auth.middlewares=auth
+      - traefik.http.routers.auth.entrypoints=https
+      - traefik.http.routers.auth.tls.certresolver=letsEncrypt
+      - traefik.http.services.auth.loadbalancer.server.port=8081
+
+  video_info:
+    build: ./video_info
+    command: ./video_info
+    networks:
+      - traefik_proxy
+    ports:
+      - "8083:8083"
+
+networks:
+  traefik_proxy:
+    external: true

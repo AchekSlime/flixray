@@ -1,0 +1,7 @@
+module github.com/achekslime/flixray/chat_client
+
+go 1.20
+
+require github.com/gorilla/websocket v1.5.0
+
+require github.com/gogo/protobuf v1.3.2

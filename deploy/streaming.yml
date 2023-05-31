@@ -1,0 +1,24 @@
+version: "3.7"
+
+services:
+  streaming:
+    container_name: streaming
+    build: ../streaming
+    command: ./streaming
+    networks:
+      - traefik_proxy
+    ports:
+      - "8092:8092"
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.streaming.service=streaming
+      - traefik.http.routers.streaming.rule=Host(`app.flixray.ru`) && PathPrefix(`/srv/streaming`)
+      - traefik.http.middlewares.streaming.stripprefix.prefixes=/srv/streaming
+      - traefik.http.routers.streaming.middlewares=streaming
+      - traefik.http.routers.streaming.entrypoints=https
+      - traefik.http.routers.streaming.tls.certresolver=production
+      - traefik.http.services.streaming.loadbalancer.server.port=8092
+
+networks:
+  traefik_proxy:
+    external: true

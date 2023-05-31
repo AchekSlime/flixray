@@ -1,0 +1,24 @@
+version: "3.7"
+
+services:
+  room_api:
+    container_name: room_api
+    build: ../room_api
+    command: ./room_api
+    networks:
+      - traefik_proxy
+    ports:
+      - "8082:8082"
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.room_api.service=room_api
+      - traefik.http.routers.room_api.rule=Host(`app.flixray.ru`) && PathPrefix(`/srv/room_api`)
+      - traefik.http.middlewares.room_api.stripprefix.prefixes=/srv/room_api
+      - traefik.http.routers.room_api.middlewares=room_api
+      - traefik.http.routers.room_api.entrypoints=https
+      - traefik.http.routers.room_api.tls.certresolver=production
+      - traefik.http.services.room_api.loadbalancer.server.port=8082
+
+networks:
+  traefik_proxy:
+    external: true

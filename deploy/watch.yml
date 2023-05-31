@@ -1,0 +1,24 @@
+version: "3.7"
+
+services:
+  watch:
+    container_name: watch
+    build: ../watch
+    command: ./watch
+    networks:
+      - traefik_proxy
+    ports:
+      - "8093:8093"
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.watch.service=watch
+      - traefik.http.routers.watch.rule=Host(`app.flixray.ru`) && PathPrefix(`/srv/watch`)
+      - traefik.http.middlewares.watch.stripprefix.prefixes=/srv/watch
+      - traefik.http.routers.watch.middlewares=watch
+      - traefik.http.routers.watch.entrypoints=https
+      - traefik.http.routers.watch.tls.certresolver=production
+      - traefik.http.services.watch.loadbalancer.server.port=8093
+
+networks:
+  traefik_proxy:
+    external: true

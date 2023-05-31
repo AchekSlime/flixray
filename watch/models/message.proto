@@ -1,0 +1,12 @@
+syntax = "proto3";
+package models;
+
+import "github.com/gogo/protobuf/gogoproto/gogo.proto";
+option (gogoproto.goproto_getters_all) = false;
+
+message Event {
+  string Author = 1 [(gogoproto.jsontag) = "author", (gogoproto.moretags) = "binding:\"required\""];
+  string Type = 2 [(gogoproto.jsontag) = "type", (gogoproto.moretags) = "binding:\"required\""];
+  int64 Timing = 3 [(gogoproto.jsontag) = "timing", (gogoproto.moretags) = "binding:\"required\""];
+  string Status = 4 [(gogoproto.jsontag) = "status"];
+}

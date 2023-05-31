@@ -1,0 +1,24 @@
+version: "3.7"
+
+services:
+  user_api:
+    container_name: user_api
+    build: ../user_api
+    command: ./user_api
+    networks:
+      - traefik_proxy
+    ports:
+      - "8083:8083"
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.user_api.service=user_api
+      - traefik.http.routers.user_api.rule=Host(`app.flixray.ru`) && PathPrefix(`/srv/user_api`)
+      - traefik.http.middlewares.user_api.stripprefix.prefixes=/srv/user_api
+      - traefik.http.routers.user_api.middlewares=user_api
+      - traefik.http.routers.user_api.entrypoints=https
+      - traefik.http.routers.user_api.tls.certresolver=production
+      - traefik.http.services.user_api.loadbalancer.server.port=8083
+
+networks:
+  traefik_proxy:
+    external: true

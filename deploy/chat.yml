@@ -1,0 +1,24 @@
+version: "3.7"
+
+services:
+  chat:
+    container_name: chat
+    build: ../chat
+    command: ./chat
+    networks:
+      - traefik_proxy
+    ports:
+      - "8091:8091"
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.chat.service=chat
+      - traefik.http.routers.chat.rule=Host(`app.flixray.ru`) && PathPrefix(`/srv/chat`)
+      - traefik.http.middlewares.chat.stripprefix.prefixes=/srv/chat
+      - traefik.http.routers.chat.middlewares=chat
+      - traefik.http.routers.chat.entrypoints=https
+      - traefik.http.routers.chat.tls.certresolver=production
+      - traefik.http.services.chat.loadbalancer.server.port=8091
+
+networks:
+  traefik_proxy:
+    external: true
